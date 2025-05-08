@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Card</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #splashScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.8s ease;
+    }
+
+    #mainContent {
+      display: none;
+      height: 100vh;
+      background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .card-custom {
+      width: 90%;
+      max-width: 500px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-placeholder {
+      height: 300px;
+      background-color: #eee;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .birthday-msg {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .birthday-msg h1 {
+      font-size: 2.5rem;
+      color: #ff6f61;
+    }
+
+    .birthday-msg p {
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .confetti {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="splashScreen">
+    <h1 class="animate__animated animate__fadeInDown">🎉 Welcome! 🎉</h1>
+    <button class="btn btn-primary mt-4 animate__animated animate__pulse animate__infinite" onclick="startExperience()">Start the Celebration</button>
+  </div>
+
+  <div id="mainContent">
+    <div class="card-custom animate__animated animate__zoomIn">
+      <div id="photoArea" class="photo-placeholder" style="background-image: url('nat.jpg');"></div>
+      <div class="birthday-msg">
+        <h1 class="animate__animated animate__fadeInDown">Happy Birthday!</h1>
+        <p class="animate__animated animate__fadeInUp animate__delay-1s">
+          Wishing you a day filled with love, laughter, and joy. You are truly special!
+        </p>
+        <button class="btn btn-outline-primary mt-3" onclick="showSurprise()">Click for a Surprise 🎁</button>
+      </div>
+      <canvas class="confetti" id="confettiCanvas"></canvas>
+    </div>
+  </div>
+
+  <audio id="birthdaySong" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confettiCount = 150;
+    const confetti = Array.from({ length: confettiCount }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * confettiCount,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      tilt: Math.random() * 10 - 10
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach(c => {
+        ctx.beginPath();
+        ctx.lineWidth = c.r / 2;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.r);
+        ctx.stroke();
+      });
+      update();
+    }
+
+    function update() {
+      confetti.forEach(c => {
+        c.y += Math.cos(c.d) + 1 + c.r / 2;
+        c.x += Math.sin(c.d);
+
+        if (c.y > canvas.height) {
+          c.y = -10;
+          c.x = Math.random() * canvas.width;
+        }
+      });
+    }
+
+    function loop() {
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function showSurprise() {
+      alert("🎉 Surprise! You're amazing and deserve all the best today and always! 🎉");
+    }
+
+    function startExperience() {
+      const splash = document.getElementById('splashScreen');
+      const main = document.getElementById('mainContent');
+      splash.style.opacity = '0';
+      setTimeout(() => {
+        splash.style.display = 'none';
+        main.style.display = 'flex';
+        document.getElementById('birthdaySong').volume = 0.5;
+        document.getElementById('birthdaySong').play();
+        loop();
+      }, 800);
+    }
+  </script>
+</body>
+
+</html>
